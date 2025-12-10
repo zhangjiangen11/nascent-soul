@@ -1,3 +1,4 @@
+@tool
 class_name ZoneVBoxLayout extends ZoneLayout
 
 @export var item_spacing: float = 10.0

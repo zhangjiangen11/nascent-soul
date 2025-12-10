@@ -63,7 +63,7 @@ func _create_zone(container: Control, zone_name: String) -> Zone:
 	
 	# 配置通用模块
 	zone.display = ZoneTweenDisplay.new()
-	zone.interaction = ZoneCardInteraction.new()
+	zone.interaction = ZoneInteraction.new()
 	zone.sort = ZoneManualSort.new()
 	zone.permission = ZoneAllowAllPermission.new()
 	

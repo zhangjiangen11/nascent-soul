@@ -1,3 +1,4 @@
+@tool
 class_name ZoneHandLayout extends ZoneLayout
 
 @export var arch_angle_deg: float = 30.0

@@ -1,3 +1,4 @@
+@tool
 class_name ZoneTweenDisplay extends ZoneDisplay
 
 @export var duration: float = 0.2

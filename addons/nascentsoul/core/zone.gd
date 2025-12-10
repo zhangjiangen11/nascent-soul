@@ -2,13 +2,17 @@
 class_name Zone extends Node
 
 # --- 信号定义 ---
-# 当物品成功进入本 Zone 时触发 (包括从其他 Zone 拖入或本 Zone 内部重排)
+# 交互信号
+signal item_clicked(item: Control)       # 左键单击
+signal item_double_clicked(item: Control)# 左键双击
+signal item_right_clicked(item: Control) # 右键单击
+signal item_long_pressed(item: Control)  # 长按 (通常指左键)
+signal item_hover_entered(item: Control)
+signal item_hover_exited(item: Control)
+
+# 拖拽/布局信号
 signal item_dropped(item: Control, source_zone: Zone)
-
-# 当物品离开本 Zone 时触发
 signal item_removed(item: Control, target_zone: Zone)
-
-# 当布局发生任何变化 (添加、移除、重排) 时触发
 signal layout_changed()
 
 # --- 配置 ---
@@ -233,7 +237,7 @@ func _create_ghost():
 	if ZoneDragContext.dragging_items.is_empty(): return
 	var drag_item = ZoneDragContext.dragging_items[0]
 	
-	var ghost_scn = drag_item.get_meta("zone_ghost_scene", null)
+	var ghost_scn = drag_item.get_meta("zone_ghost_scene", null) if drag_item.has_meta("zone_ghost_scene") else null
 	if ghost_scn and ghost_scn is PackedScene:
 		_ghost_instance = ghost_scn.instantiate()
 		_ghost_instance.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -253,10 +257,11 @@ func _clear_ghost():
 	_ghost_instance = null
 
 func _register_item(item: Control):
-	if interaction:
+	if not Engine.is_editor_hint() and interaction:
 		interaction.register_item(self, item)
-	if not item.gui_input.is_connected(_on_item_gui_input):
-		item.gui_input.connect(_on_item_gui_input.bind(item))
+	if not Engine.is_editor_hint():
+		if not item.gui_input.is_connected(_on_item_gui_input):
+			item.gui_input.connect(_on_item_gui_input.bind(item))
 
 func _on_child_entered(node: Node):
 	if node is Control and node != _ghost_instance:
@@ -272,5 +277,5 @@ func _on_child_exited(node: Node):
 			layout_changed.emit()
 
 func _on_item_gui_input(event: InputEvent, item: Control):
-	if interaction:
+	if not Engine.is_editor_hint() and interaction:
 		interaction.handle_input(self, item, event)
